@@ -6,7 +6,7 @@ IMPORTANT NOTE: Make sure you have Python version 3.9 or later installed on your
 ### File Creation
 Download the 'data app' folder and all of its contents. Extract the folder and open the folder where you see app.py, the data folder, requirements.txt, and verify_setup.py. At this level, create a folder and call it '.streamlit'. Inside the '.streamlit' folder, create a text file and call it 'secrets.toml'. Open this text tile and put the following into it and save:
 
-[connections.da_mvp_db]
+[connections.da_mvp_db]<br>
 url = "sqlite:///./data/database.db"
 
 
@@ -15,13 +15,13 @@ All the files are now created (for some reason, GitHub didn't let me upload this
 ### Command Line Setup
 Open the 'data app' folder. In the blank space, right-click and select the 'Open in Terminal' option. Inside the terminal, type the following commands:
 
-python -m venv venv
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+python -m venv venv<br>
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser<br>
 .\venv\Scripts\Activate.ps1
 
 You should now see a green (venv) in front of your file directory on the left. Assuming you have that, do the following commands:
 
-pip install --upgrade pip
+pip install --upgrade pip<br>
 pip install -r requirements.txt
 
 You should now have the virtual environment set up and the dependencies downloaded.
@@ -40,5 +40,5 @@ This should put some text into the command prompt and then open a new tab automa
 
 For future reference, when you go to run this application after setup, open the data app folder and open the command prompt like you did before. Then type the following to open the virtual environment and run the app:
 
-.\venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1<br>
 streamlit run app.py
