@@ -1,7 +1,7 @@
 # cypresssolutions-data-app
 
 ## Install Instructions
-IMPORTANT NOTE: Make sure you have Python version 3.9 or later installed on your computer. To test this, open Command Prompt and type 'python --version'.
+IMPORTANT NOTE: Make sure you have Python version 3.9-3.12 installed on your computer. Python 3.11.9 is the recommended version to install as that is the version this app was created using. To test this, open Command Prompt and type 'python --version'.
 
 ### File Creation
 Download the 'data app' folder and all of its contents. Extract the folder and open the folder where you see app.py, the data folder, requirements.txt, and verify_setup.py. At this level, create a folder and call it '.streamlit'. Inside the '.streamlit' folder, create a text file and call it 'secrets.toml'. Open this text tile and put the following into it and save:
