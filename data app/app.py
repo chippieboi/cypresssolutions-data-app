@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData, Table
 import altair as alt
 import plotly.express as px
 import math
@@ -8,6 +8,7 @@ import math
 #To look at more streamlit additions, go to: docs.streamlit.io/develop/api-reference/widgets
 
 #fill nulls with defaults
+#not used at the moment because it seems unneeded
 def fill_nulls(df):
 
     def default_for_dtype(dtype):
@@ -38,9 +39,6 @@ def ingest_data(df):
         st.warning("Excel sheet is empty, make sure you uploaded the correct file")
         return
 
-    #should it check for nulls? ensuring no null spaces would help with creating graphs later on, but will require more work on the user at the start
-    #df = fill_nulls(df)
-
     # Database connection
     engine = create_engine("sqlite:///data/database.db")
     df.to_sql(table_name, engine, if_exists="append", index=False)
@@ -69,45 +67,48 @@ if st.button("Read File"):
     st.write(df.head())
 
     ingest_data(df)
+    st.experimental_rerun()
 
-#choose which table to graph
 engine = create_engine("sqlite:///data/database.db")
 table_names = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'", engine)
 table_names = table_names["name"].to_list()
+
+#delete tables from the SQL database
+st.subheader("Table deletion:")
+delete = st.selectbox("Select table you want to view", table_names, key="DeleteTable")
+if len(table_names) == 0:
+    st.warning("No tables in database to delete")
+else:
+    if st.button("Delete " + delete + "table"):
+        metadata = MetaData()
+        my_table = Table(delete, metadata, autoload_with=engine)
+
+        my_table.drop(engine, checkfirst=True)
+        st.experimental_rerun()
+
+
+#choose which table to graph
+st.subheader("Graph Creation:")
+
 #print(table_names)
-choice = st.selectbox("Select table you want to view", table_names)
+
 
 if len(table_names) == 0:
     st.warning("No tables in the database, add one to use the graphing features!")
 
 else:
+    choice = st.selectbox("Select table you want to view", table_names, key="ViewTable")
     column_names = pd.read_sql("SELECT * FROM " + choice, engine)
-    #print(column_names)
     column1 = st.selectbox("Select column you want to view", column_names.columns.to_list())
 
     chart_type = st.radio("Choose chart type:", ["Bar Chart", "Pie Chart"])
 
     # Display stored data
-    if st.button("View All Transactions"):
+    if st.button("Create graph and view selected data"):
         engine = create_engine("sqlite:///data/database.db")
         df = pd.read_sql("SELECT * FROM " + choice, engine)
-        
 
-        # chart test stuff
-        # if(choice == "xycoords"):
-        #     #df = df.drop(columns=["index"])
-        #     xy = df[["X-Coord", "Y-Coord"]].rename(columns={"X-Coord": "x", "Y-Coord": "y"})
-
-        #     chart = alt.Chart(xy).mark_circle().encode(
-        #         x="x",
-        #         y="y"
-        #     )
-
-        #     st.altair_chart(chart, use_container_width=True)
-        #     st.scatter_chart(xy)
-
-        # if(choice == "crossroads1"):
-        #freq = pd.read_sql("SELECT Gender, COUNT(*) AS frequency FROM crossroads1 GROUP BY Gender ORDER BY frequency DESC", engine)
+        #create freq dataframe
         freq = pd.read_sql("SELECT \"" + column1 + "\", COUNT(*) AS frequency FROM \"" + choice + "\" WHERE \"" + column1 + "\" != 'unknown' GROUP BY \"" + column1 + "\" ORDER BY frequency DESC", engine)
 
         #grouping for numbers
